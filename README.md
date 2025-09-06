@@ -11,7 +11,8 @@ A comprehensive network scanner web application with real-time speed monitoring,
 - **Host Discovery**: Find active devices on the network
 - **MAC Address Detection**: Identify device MAC addresses
 - **Hostname Resolution**: Resolve IP addresses to hostnames
-
+asdfasf
+adfad
 ### 📊 **Real-time Speed Monitoring**
 - **Live Speed Tracking**: Real-time download/upload speed monitoring
 - **Interactive Charts**: Visual representation of network speeds over time
