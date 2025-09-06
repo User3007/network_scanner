@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Scanner - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #f1f5f9;
+        }
+        
+        .feature-card p {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+        
+        .setup-section {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .setup-section h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #f1f5f9;
+        }
+        
+        .setup-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .step {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .step h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #f1f5f9;
+        }
+        
+        .step p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        .code-block {
+            background: #0f172a;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            color: #10b981;
+            overflow-x: auto;
+        }
+        
+        .warning {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .warning h4 {
+            color: #fca5a5;
+            margin-bottom: 0.5rem;
+        }
+        
+        .warning p {
+            color: #fecaca;
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid #374151;
+            color: #94a3b8;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 Network Scanner</h1>
+            <p>A comprehensive network scanning web application with real-time dashboard</p>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h3>Network Discovery</h3>
+                <p>Scan IP ranges to discover active hosts, open ports, and running services. Get detailed information about each device on your network.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Real-time Dashboard</h3>
+                <p>Monitor network health, system resources, and active connections with live updates and interactive charts.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Fast & Efficient</h3>
+                <p>Optimized scanning algorithms with parallel processing for quick network analysis and device identification.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Modern UI</h3>
+                <p>Beautiful dark theme interface with responsive design that works perfectly on desktop and mobile devices.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔧</div>
+                <h3>Customizable</h3>
+                <p>Configure scan ranges, port lists, and monitoring intervals. Use preset configurations for common scenarios.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3>Analytics</h3>
+                <p>Visualize network traffic, memory usage, and connection patterns with interactive charts and graphs.</p>
+            </div>
+        </div>
+        
+        <div class="setup-section">
+            <h2>🚀 Quick Start</h2>
+            <div class="setup-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Install Prerequisites</h3>
+                    <p>Download and install Node.js and Nmap on your system</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Run Setup</h3>
+                    <p>Execute the setup script to install all dependencies</p>
+                    <div class="code-block">npm install && cd client && npm install</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Start Application</h3>
+                    <p>Launch the development server and open your browser</p>
+                    <div class="code-block">npm run dev</div>
+                </div>
+            </div>
+            
+            <div class="warning">
+                <h4>⚠️ Important Security Notice</h4>
+                <p>This tool performs network scanning which may be detected by security systems. Only scan networks you own or have explicit permission to scan. Be aware of your organization's network policies.</p>
+            </div>
+        </div>
+        
+        <div class="setup-section">
+            <h2>📋 Features Overview</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                <div>
+                    <h4 style="color: #3b82f6; margin-bottom: 0.5rem;">Network Scanning</h4>
+                    <ul style="color: #94a3b8; font-size: 0.9rem; padding-left: 1rem;">
+                        <li>IP range scanning</li>
+                        <li>Port detection</li>
+                        <li>Service identification</li>
+                        <li>MAC address resolution</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: #10b981; margin-bottom: 0.5rem;">System Monitoring</h4>
+                    <ul style="color: #94a3b8; font-size: 0.9rem; padding-left: 1rem;">
+                        <li>CPU usage tracking</li>
+                        <li>Memory monitoring</li>
+                        <li>Network interface stats</li>
+                        <li>Active connections</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: #f59e0b; margin-bottom: 0.5rem;">Real-time Updates</h4>
+                    <ul style="color: #94a3b8; font-size: 0.9rem; padding-left: 1rem;">
+                        <li>Live dashboard updates</li>
+                        <li>WebSocket communication</li>
+                        <li>Interactive charts</li>
+                        <li>Real-time notifications</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Network Scanner Web Application - Built with React, Node.js, and modern web technologies</p>
+            <p style="margin-top: 0.5rem; font-size: 0.8rem;">For educational and authorized network administration purposes only</p>
+        </div>
+    </div>
+</body>
+</html>

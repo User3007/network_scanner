@@ -1,0 +1,339 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>Network Scanner Dashboard</title> 
+  <style> 
+    body { font-family: Arial, sans-serif; background: #1a1a1a; color: white; margin: 0; padding: 20px; } 
+    .container { max-width: 1200px; margin: 0 auto; } 
+    .header { text-align: center; margin-bottom: 30px; } 
+    .card { background: #2a2a2a; padding: 20px; margin: 10px 0; border-radius: 8px; } 
+    .button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; } 
+    .button:hover { background: #0056b3; }
+    .button:disabled { background: #666; cursor: not-allowed; opacity: 0.6; } 
+    .host { background: #333; padding: 15px; margin: 10px 0; border-radius: 5px; }
+    .speed-card { background: #2a2a2a; padding: 20px; margin: 10px 0; border-radius: 8px; }
+    .speed-display { display: flex; justify-content: space-around; margin: 20px 0; }
+    .speed-item { text-align: center; }
+    .speed-value { font-size: 24px; font-weight: bold; color: #00ff88; }
+    .speed-label { font-size: 14px; color: #aaa; margin-top: 5px; }
+    .chart-container { height: 200px; background: #1a1a1a; border-radius: 5px; padding: 10px; margin: 10px 0; }
+    .status-indicator { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+    .status-online { background: #00ff88; }
+    .status-offline { background: #ff4444; } 
+  </style> 
+</head> 
+<body> 
+  <div class="container"> 
+    <div class="header"> 
+      <h1>?? Network Scanner Dashboard</h1> 
+      <p>Monitor your network and system information</p> 
+    </div> 
+    <div class="card"> 
+      <h2>Network Scanner</h2> 
+      <button class="button" onclick="scanNetwork()">Scan Network</button> 
+      <div id="scanResults"></div> 
+    </div> 
+        <div class="card">
+      <h2>Network Speed Monitor <span class="status-indicator status-online" id="monitoringStatus"></span></h2>
+      <div class="speed-display">
+        <div class="speed-item">
+          <div class="speed-value" id="downloadSpeed">0.00</div>
+          <div class="speed-label">Download (Mbps)</div>
+        </div>
+        <div class="speed-item">
+          <div class="speed-value" id="uploadSpeed">0.00</div>
+          <div class="speed-label">Upload (Mbps)</div>
+        </div>
+        <div class="speed-item">
+          <div class="speed-value" id="avgDownload">0.00</div>
+          <div class="speed-label">Avg Download (5min)</div>
+        </div>
+        <div class="speed-item">
+          <div class="speed-value" id="avgUpload">0.00</div>
+          <div class="speed-label">Avg Upload (5min)</div>
+        </div>
+      </div>
+      <button class="button" onclick="toggleSpeedMonitoring()" id="speedToggleBtn">Auto-Starting...</button>
+      <button class="button" onclick="loadSpeedData()">Refresh Speed Data</button>
+      <div class="chart-container" id="speedChart">
+        <canvas id="speedCanvas" width="800" height="150"></canvas>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>System Information</h2>
+      <button class="button" onclick="loadSystemInfo()">Load System Info</button>
+      <div id="systemInfo"></div>
+    </div> 
+  </div> 
+  <script> 
+    async function scanNetwork() { 
+      try { 
+        const response = await fetch('http://localhost:5000/api/scan-network', { 
+          method: 'POST', 
+          headers: { 'Content-Type': 'application/json' }, 
+          body: JSON.stringify({ ipRange: '192.168.1.0/24', ports: '1-1000' }) 
+        }); 
+        const data = await response.json(); 
+        displayScanResults(data); 
+      } catch (error) { 
+        console.error('Error:', error); 
+      } 
+    } 
+ 
+    async function loadSystemInfo() { 
+      try { 
+        const response = await fetch('http://localhost:5000/api/network-info'); 
+        const data = await response.json(); 
+        displaySystemInfo(data); 
+      } catch (error) { 
+        console.error('Error:', error); 
+      } 
+    } 
+ 
+    function displayScanResults(data) { 
+      const resultsDiv = document.getElementById('scanResults'); 
+      resultsDiv.innerHTML = ` 
+        <h3>Scan Results</h3> 
+        <p>Total Hosts: ${data.totalHosts}</p> 
+        <p>Alive Hosts: ${data.aliveHosts}</p> 
+        <p>Scan Time: ${new Date(data.scanTime).toLocaleString()}</p> 
+        ${data.hosts.map(host => ` 
+          <div class="host"> 
+            <h4>${host.ip} - ${host.hostname}</h4> 
+            <p>Status: ${host.state}</p> 
+            <p>MAC: ${host.macAddress}</p> 
+            <p>Open Ports: ${host.openPorts.length}</p> 
+          </div> 
+        `).join('')} 
+      `; 
+    } 
+ 
+    function displaySystemInfo(data) { 
+      const infoDiv = document.getElementById('systemInfo'); 
+      infoDiv.innerHTML = ` 
+        <h3>System Information</h3> 
+        <p>Hostname: ${data.hostname}</p> 
+        <p>Platform: ${data.platform}</p> 
+        <p>Architecture: ${data.architecture}</p> 
+        <p>Uptime: ${Math.floor(data.uptime / 60)} minutes</p> 
+        <p>Total Memory: ${Math.round(data.totalMemory / 1024 / 1024 / 1024)} GB</p> 
+        <p>Free Memory: ${Math.round(data.freeMemory / 1024 / 1024 / 1024)} GB</p> 
+      `; 
+    } 
+ 
+        // Network speed monitoring variables
+    let isSpeedMonitoring = false;
+    let speedHistory = [];
+    let speedChart = null;
+    let autoStartDelay = 2000; // 2 seconds delay for auto-start
+
+    // Initialize speed chart
+    function initSpeedChart() {
+      const canvas = document.getElementById('speedCanvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Simple chart drawing function
+      speedChart = {
+        canvas: canvas,
+        ctx: ctx,
+        data: [],
+        maxPoints: 50
+      };
+    }
+
+    // Draw speed chart
+    function drawSpeedChart() {
+      if (!speedChart) return;
+      
+      const { ctx, canvas, data } = speedChart;
+      const width = canvas.width;
+      const height = canvas.height;
+      
+      // Clear canvas
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(0, 0, width, height);
+      
+      if (data.length < 2) return;
+      
+      // Find max values for scaling
+      const maxDownload = Math.max(...data.map(d => d.downloadSpeedMbps));
+      const maxUpload = Math.max(...data.map(d => d.uploadSpeedMbps));
+      const maxValue = Math.max(maxDownload, maxUpload, 1);
+      
+      // Draw grid lines
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 5; i++) {
+        const y = (height / 5) * i;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+      
+      // Draw download line
+      ctx.strokeStyle = '#00ff88';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      data.forEach((point, index) => {
+        const x = (width / (data.length - 1)) * index;
+        const y = height - (point.downloadSpeedMbps / maxValue) * height;
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      ctx.stroke();
+      
+      // Draw upload line
+      ctx.strokeStyle = '#ff6b6b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      data.forEach((point, index) => {
+        const x = (width / (data.length - 1)) * index;
+        const y = height - (point.uploadSpeedMbps / maxValue) * height;
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      ctx.stroke();
+      
+      // Draw legend
+      ctx.fillStyle = '#00ff88';
+      ctx.fillRect(10, 10, 10, 10);
+      ctx.fillStyle = 'white';
+      ctx.font = '12px Arial';
+      ctx.fillText('Download', 25, 18);
+      
+      ctx.fillStyle = '#ff6b6b';
+      ctx.fillRect(10, 25, 10, 10);
+      ctx.fillStyle = 'white';
+      ctx.fillText('Upload', 25, 33);
+    }
+
+    // Update speed display
+    function updateSpeedDisplay(speedData) {
+      document.getElementById('downloadSpeed').textContent = speedData.downloadSpeedMbps.toFixed(2);
+      document.getElementById('uploadSpeed').textContent = speedData.uploadSpeedMbps.toFixed(2);
+      
+      // Calculate 5-minute averages
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+      const recentData = speedHistory.filter(d => new Date(d.timestamp) > fiveMinutesAgo);
+      
+      if (recentData.length > 0) {
+        const avgDownload = recentData.reduce((sum, d) => sum + d.downloadSpeedMbps, 0) / recentData.length;
+        const avgUpload = recentData.reduce((sum, d) => sum + d.uploadSpeedMbps, 0) / recentData.length;
+        
+        document.getElementById('avgDownload').textContent = avgDownload.toFixed(2);
+        document.getElementById('avgUpload').textContent = avgUpload.toFixed(2);
+      }
+      
+      // Add to chart data
+      speedHistory.push(speedData);
+      if (speedHistory.length > speedChart.maxPoints) {
+        speedHistory = speedHistory.slice(-speedChart.maxPoints);
+      }
+      
+      speedChart.data = speedHistory;
+      drawSpeedChart();
+    }
+
+    // Toggle speed monitoring
+    async function toggleSpeedMonitoring() {
+      const button = document.getElementById('speedToggleBtn');
+      const statusIndicator = document.getElementById('monitoringStatus');
+      
+      if (!isSpeedMonitoring) {
+        try {
+          button.textContent = 'Starting...';
+          button.disabled = true;
+          
+          const response = await fetch('http://localhost:5000/api/speed-monitoring', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'start' })
+          });
+          
+          if (response.ok) {
+            isSpeedMonitoring = true;
+            button.textContent = 'Stop Speed Monitoring';
+            button.style.background = '#dc3545';
+            button.disabled = false;
+            statusIndicator.className = 'status-indicator status-online';
+            
+            // Start polling for speed data
+            speedPollingInterval = setInterval(loadSpeedData, 2000);
+          } else {
+            button.textContent = 'Start Speed Monitoring';
+            button.disabled = false;
+            statusIndicator.className = 'status-indicator status-offline';
+          }
+        } catch (error) {
+          console.error('Error starting speed monitoring:', error);
+          button.textContent = 'Start Speed Monitoring';
+          button.disabled = false;
+          statusIndicator.className = 'status-indicator status-offline';
+        }
+      } else {
+        try {
+          button.textContent = 'Stopping...';
+          button.disabled = true;
+          
+          const response = await fetch('http://localhost:5000/api/speed-monitoring', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'stop' })
+          });
+          
+          if (response.ok) {
+            isSpeedMonitoring = false;
+            button.textContent = 'Start Speed Monitoring';
+            button.style.background = '#007bff';
+            button.disabled = false;
+            statusIndicator.className = 'status-indicator status-offline';
+            
+            if (speedPollingInterval) {
+              clearInterval(speedPollingInterval);
+            }
+          } else {
+            button.textContent = 'Stop Speed Monitoring';
+            button.disabled = false;
+          }
+        } catch (error) {
+          console.error('Error stopping speed monitoring:', error);
+          button.textContent = 'Stop Speed Monitoring';
+          button.disabled = false;
+        }
+      }
+    }
+
+    // Load speed data
+    async function loadSpeedData() {
+      try {
+        const response = await fetch('http://localhost:5000/api/network-speed');
+        const data = await response.json();
+        updateSpeedDisplay(data);
+      } catch (error) {
+        console.error('Error loading speed data:', error);
+      }
+    }
+
+    // Load system info on page load
+    window.onload = function() {
+      loadSystemInfo();
+      initSpeedChart();
+      
+      // Auto-start speed monitoring
+      setTimeout(() => {
+        toggleSpeedMonitoring();
+      }, autoStartDelay); // Start monitoring after delay
+    }; 
+  </script> 
+</body> 
+</html> 
