@@ -1,4 +1,6 @@
 
+TEST
+
 # 🌐 Network Scanner Web Application
 
 A comprehensive network scanner web application with real-time speed monitoring, device discovery, and system information dashboard.
