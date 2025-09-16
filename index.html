@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Scanner Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-network-wired"></i> Network Scanner Dashboard</h1>
+            <p>Monitor your network properties and test connection speed</p>
+        </header>
+
+        <div class="dashboard">
+            <!-- Network Properties Section -->
+            <div class="card network-properties-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-info-circle"></i> Network Properties</h2>
+                    <button id="refreshBtn" class="refresh-btn">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="card-content">
+                    <div class="property-grid">
+                        <!-- Connection Information -->
+                        <div class="property-section">
+                            <h3><i class="fas fa-wifi"></i> Connection Details</h3>
+                            <div class="property-item">
+                                <span class="property-label">Online Status:</span>
+                                <span id="onlineStatus" class="property-value">Checking...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Connection Type:</span>
+                                <span id="connectionType" class="property-value">Detecting...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Effective Connection:</span>
+                                <span id="effectiveType" class="property-value">Detecting...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Downlink Speed:</span>
+                                <span id="downlink" class="property-value">Measuring...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">RTT (Round Trip Time):</span>
+                                <span id="rtt" class="property-value">Measuring...</span>
+                            </div>
+                        </div>
+
+                        <!-- IP and Network Information -->
+                        <div class="property-section">
+                            <h3><i class="fas fa-globe"></i> IP & Network Info</h3>
+                            <div class="property-item">
+                                <span class="property-label">Public IP Address:</span>
+                                <span id="publicIp" class="property-value">Fetching...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Local IP Address:</span>
+                                <span id="localIp" class="property-value">Detecting...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Hostname:</span>
+                                <span id="hostname" class="property-value">Loading...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">ISP Provider:</span>
+                                <span id="isp" class="property-value">Fetching...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">IPv6 Support:</span>
+                                <span id="ipv6Support" class="property-value">Testing...</span>
+                            </div>
+                        </div>
+
+                        <!-- Location Information -->
+                        <div class="property-section">
+                            <h3><i class="fas fa-map-marker-alt"></i> Location Info</h3>
+                            <div class="property-item">
+                                <span class="property-label">Country:</span>
+                                <span id="country" class="property-value">Fetching...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Region:</span>
+                                <span id="region" class="property-value">Fetching...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">City:</span>
+                                <span id="city" class="property-value">Fetching...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Timezone:</span>
+                                <span id="timezone" class="property-value">Fetching...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Coordinates:</span>
+                                <span id="coordinates" class="property-value">Fetching...</span>
+                            </div>
+                        </div>
+
+                        <!-- Browser and System Information -->
+                        <div class="property-section">
+                            <h3><i class="fas fa-desktop"></i> System Info</h3>
+                            <div class="property-item">
+                                <span class="property-label">Browser:</span>
+                                <span id="browser" class="property-value">Loading...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Platform:</span>
+                                <span id="platform" class="property-value">Loading...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Language:</span>
+                                <span id="language" class="property-value">Loading...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Screen Resolution:</span>
+                                <span id="screenResolution" class="property-value">Loading...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Color Depth:</span>
+                                <span id="colorDepth" class="property-value">Loading...</span>
+                            </div>
+                        </div>
+
+                        <!-- Network Security -->
+                        <div class="property-section">
+                            <h3><i class="fas fa-shield-alt"></i> Security Info</h3>
+                            <div class="property-item">
+                                <span class="property-label">Connection Security:</span>
+                                <span id="connectionSecurity" class="property-value">Checking...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">DNS Over HTTPS:</span>
+                                <span id="dnsOverHttps" class="property-value">Testing...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">WebRTC Support:</span>
+                                <span id="webrtcSupport" class="property-value">Testing...</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Cookie Enabled:</span>
+                                <span id="cookieEnabled" class="property-value">Checking...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Speed Test Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> Connection Speed Test</h2>
+                </div>
+                <div class="card-content">
+                    <div class="speed-test-container">
+                        <div class="speed-display">
+                            <div class="speed-gauge">
+                                <div class="gauge-container">
+                                    <div id="speedNeedle" class="speed-needle"></div>
+                                    <div class="gauge-center"></div>
+                                </div>
+                                <div class="speed-value">
+                                    <span id="speedValue">0</span>
+                                    <span class="speed-unit">Mbps</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="test-controls">
+                            <button id="startTestBtn" class="test-btn">
+                                <i class="fas fa-play"></i> Start Speed Test
+                            </button>
+                            <div id="testProgress" class="test-progress hidden">
+                                <div class="progress-bar">
+                                    <div id="progressFill" class="progress-fill"></div>
+                                </div>
+                                <span id="testStatus">Initializing...</span>
+                            </div>
+                        </div>
+
+                        <div class="test-results">
+                            <div class="result-item">
+                                <span class="result-label">Download Speed:</span>
+                                <span id="downloadSpeed" class="result-value">-- Mbps</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Upload Speed:</span>
+                                <span id="uploadSpeed" class="result-value">-- Mbps</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Ping:</span>
+                                <span id="pingTime" class="result-value">-- ms</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Jitter:</span>
+                                <span id="jitter" class="result-value">-- ms</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Network History Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-line"></i> Speed Test History</h2>
+                    <button id="clearHistoryBtn" class="clear-btn">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                </div>
+                <div class="card-content">
+                    <div id="historyContainer" class="history-container">
+                        <p class="no-history">No speed tests performed yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
